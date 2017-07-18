@@ -12,6 +12,7 @@ from PIL import ImageOps
 from flask import Flask, render_template
 from io import BytesIO
 
+
 from keras.models import model_from_json
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array
 #https://www.packtpub.com/mapt/book/application-development/9781785283932/2/ch02lvl1sec26/enhancing-the-contrast-in-an-image
@@ -22,7 +23,7 @@ def balance_brightness(image):
 	return img_out
 # Fix error with Keras and TensorFlow
 import tensorflow as tf
-tf.python.control_flow_ops = tf
+#tf.python.control_flow_ops = tf
 
 
 sio = socketio.Server()
@@ -46,6 +47,7 @@ def telemetry(sid, data):
     image_array = cv2.resize(image_array[60:140,:],(64,64))###my modification
     transformed_image_array = image_array[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
+    print(transformed_image_array.shape)
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
 
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
@@ -88,8 +90,8 @@ if __name__ == '__main__':
         #   model = model_from_json(json.loads(jfile.read()))\
         #
         # instead.
-        model = model_from_json(jfile.read())
-
+        model = model_from_json(json.loads(jfile.read()))
+   
 
     model.compile("adam", "mse")
     weights_file = args.model.replace('json', 'h5')

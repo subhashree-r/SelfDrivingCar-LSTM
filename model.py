@@ -26,7 +26,7 @@ flags.DEFINE_integer('batch_size', 128, "The batch size.")
 
 ## IMPORT COLUMNS FROM driving_log.csv INTO LISTS ##
 colnames = ['center', 'left', 'right', 'steering', 'throttle', 'brake', 'speed']
-data = pandas.read_csv('driving_log.csv', skiprows=[0], names=colnames)
+data = pandas.read_csv('/home/naveen/experiments/driving_log_latest.csv', skiprows=[0], names=colnames)
 center = data.center.tolist()
 center_recover = data.center.tolist() 
 left = data.left.tolist()
@@ -169,17 +169,20 @@ def main(_):
   model.add(Dense(1, W_regularizer = l2(0.001)))
   adam = Adam(lr = 0.0001)
   model.compile(optimizer= adam, loss='mse', metrics=['accuracy'])
+
   model.summary()
-  model.fit_generator(data_generator, samples_per_epoch = math.ceil(len(X_train)), nb_epoch=FLAGS.epochs, validation_data = valid_generator, nb_val_samples = len(X_valid))
+  #model.fit_generator(data_generator, samples_per_epoch = math.ceil(len(X_train)), nb_epoch=FLAGS.epochs, validation_data = valid_generator, nb_val_samples = len(X_valid))
 
   print('Done Training')
 
+model_json = model.to_json()
+json.dump(model_json, 'model2.json')
+
 ###Saving Model and Weights###
-  model_json = model.to_json()
-  with open("model.json", "w") as json_file:
-    json_file.write(model_json)
-  model.save_weights("model.h5")
-  print("Saved model to disk")
+  #model_json = model.to_json()
+  #@with open("model.json", "w") as json_file:
+   # json_file.write(model_json)
+  #model.save_weights("model.h5")
 
 if __name__ == '__main__':
   tf.app.run()
